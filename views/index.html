@@ -18,7 +18,13 @@
   {{#each fonts}}
   <tr>
     <td><a href="{{this._links.html}}">{{this.name}}</a></td>
-    <td><a href="http://fonts.googleapis.com/css?family={{this.name}}">{{this.path}}</a></td>
+    <td>
+      <ul>
+        {{#each downloads}}
+          <li><a href="{{this}}">{{@key}}</a></li>
+        {{/each}}
+      </ul>
+    </td>
   </tr>
   {{/each}}
 

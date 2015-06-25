@@ -6,6 +6,8 @@ const app = microbe();
 const auth = require('./auth.js');
 const fs = require('fs');
 const crypto = require('crypto');
+const metadata = require('./lib/metadata.js');
+
 
 /* Get the Github client for google/fonts */
 var client = require('octonode').client(auth.token);
@@ -36,9 +38,12 @@ repo.contents('apache', function(err, contents) {
 
   /* Add the font objects to an iteratable list */
   Object.keys(apache).forEach((key) => {
-    console.log(apache[key]);
     fonts.push(apache[key]);
   });
+
+  /* Get the data for each font */
+  fonts.forEach((font) => metadata(repo, font));
+
 
   /* Close out the JSON file and update it's contents */
   let fontNames = JSON.stringify(fontCache);
@@ -52,6 +57,7 @@ repo.contents('apache', function(err, contents) {
 
 app.route('/', function(req, res) {
   res.render('index', {fonts: fonts});
+  console.log(fonts);
 });
 
 app.start(3000, function() {
