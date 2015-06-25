@@ -5,33 +5,48 @@ const microbe = require('microbe.js');
 const app = microbe();
 const auth = require('./auth.js');
 const fs = require('fs');
-
+const crypto = require('crypto');
 
 /* Get the Github client for google/fonts */
 var client = require('octonode').client(auth.token);
 var repo = client.repo('google/fonts');
 
-/* Load the cached fonts to avoid so many API calls */
-var fontCache = JSON.parse(fs.readFileSync('fonts.json'));
-
 /* Cache the names too, for easy reference */
-var fontNameCache = JSON.parse(fs.readFileSync('fontnames.json'));
-if (!fontNameCache.apache) fontNameCache.apache = [];
+var fontCache = JSON.parse(fs.readFileSync('fontnames.json'));
+if (!fontCache.apache) fontCache.apache = {};
+if (!fontCache.count) fontCache.count = 0;
+
+/* Alias a local variable to the object property for easy access */
+var apache = fontCache.apache;
+var fonts = [];
 
 /* Hit the apache fonts first */
-repo.contents('apache', function(err, contents){
+repo.contents('apache', function(err, contents) {
 
-	/* Check for any font names that have not already been cached */
-	contents.forEach((folder) => { 
-		if(fontNameCache.apache.indexOf(folder.name) === -1 ) fontNameCache.apache.push(folder.name) 
-	});
+  if (err) console.log(err);
 
-	/* Close out the JSON file and update it's contents */
-	let  fontNames = JSON.stringify(fontNameCache);
-    fs.writeFile('fontnames.json', fontNames, function(err) { if (err) console.log(err);
-    });
+  contents.forEach((details) => {
+
+    /* If the font hasn't been cached or has changed,  re/add it */
+    if (!apache[details.name] || (apache[details.name].sha !== details.sha)) {
+      apache[details.name] = details;
+    }
+
+  });
+
+  /* Add the font objects to an iteratable list */
+  Object.keys(apache).forEach((key) => {
+    console.log(apache[key]);
+    fonts.push(apache[key]);
+  });
+
+  /* Close out the JSON file and update it's contents */
+  let fontNames = JSON.stringify(fontCache);
+  fs.writeFile('fontnames.json', fontNames, function(err) {
+    if (err) console.log(err);
+  });
+
 });
-
 
 
 

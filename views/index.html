@@ -1,7 +1,27 @@
-<h1> Google Font Downloader </h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Google Font Downloader</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+</head>
+<body>
 
-<ul>
+<h1>Google Font Downloader</h1>
+
+<table class="table table-striped">
+  <tr>
+    <td>Name</td>
+    <td>Path</td>
+  </tr>
+
   {{#each fonts}}
-    <li>{{name}}</li>
+  <tr>
+    <td><a href="{{this._links.html}}">{{this.name}}</a></td>
+    <td><a href="http://fonts.googleapis.com/css?family={{this.name}}">{{this.path}}</a></td>
+  </tr>
   {{/each}}
-</ul>
+
+</table>
+</body>
+</html>
