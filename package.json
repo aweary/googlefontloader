@@ -1,0 +1,16 @@
+{
+  "name": "GoogleFontDownloader",
+  "version": "0.0.1",
+  "description": "A simple way to download the Google Web Fonts using Google's own Github repo.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha spec",
+    "start" : "node --harmony index.js"
+  },
+  "author": "Brandon Dail <Kierkegaurd@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "microbe.js": "^0.1.5",
+    "octonode": "^0.6.18"
+  }
+}
