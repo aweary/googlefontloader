@@ -1,8 +1,10 @@
+'use strict';
+
 /* Setup Microbe.js web server */
-var microbe = require('microbe.js');
-var app = microbe();
-var auth = require('./auth.js');
-var fs = require('fs');
+const microbe = require('microbe.js');
+const app = microbe();
+const auth = require('./auth.js');
+const fs = require('fs');
 
 
 /* Get the Github client for google/fonts */
@@ -25,7 +27,7 @@ repo.contents('apache', function(err, contents){
 	});
 
 	/* Close out the JSON file and update it's contents */
-	var fontNames = JSON.stringify(fontNameCache);
+	let  fontNames = JSON.stringify(fontNameCache);
     fs.writeFile('fontnames.json', fontNames, function(err) { if (err) console.log(err);
     });
 });
