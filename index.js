@@ -12,7 +12,7 @@ var client = require('octonode').client(auth.token);
 var repo = client.repo('google/fonts');
 
 /* Cache the names too, for easy reference */
-var fontCache = JSON.parse(fs.readFileSync('fontnames.json'));
+var fontCache = JSON.parse(fs.readFileSync('fonts.json'));
 if (!fontCache.apache) fontCache.apache = {};
 if (!fontCache.count) fontCache.count = 0;
 
@@ -42,7 +42,7 @@ repo.contents('apache', function(err, contents) {
 
   /* Close out the JSON file and update it's contents */
   let fontNames = JSON.stringify(fontCache);
-  fs.writeFile('fontnames.json', fontNames, function(err) {
+  fs.writeFile('fonts.json', fontNames, function(err) {
     if (err) console.log(err);
   });
 
