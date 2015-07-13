@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" ng-app='fontApp'>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Google Font Downloader</title>
+
+  <!-- AngularJS CDN and Application -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.1/angular-sanitize.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.5.18/webfont.js"></script>
+
+  <script src="scripts/app.js"></script>
+
+  <!-- Bootstrap CDN -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+</head>
+
+<body>
+
+<div class="container" ng-controller='mainCtrl'>
+
+  <h1>Google Font Downloads</h1>
+  
+  <input type="text" ng-model='search.name'>
+  <div class="row">
+    <div class="col-sm-6 font-container" ng-repeat='font in fonts | metadata | filter:search'>
+      <h1 contenteditable="true" style='font-family: "{{font.metadata.name}}"'>{{font.metadata.name}}</h1>
+      <button class="btn btn-success">Preview Paragraph</button>
+      <p contenteditable='true' ng-bind-html="font.description" id={{font.metadata.name}}></p>
+
+      <ul ng-repeat='(name, link) in font.downloads'>
+        <li><a href="{{link}}">{{name}}</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

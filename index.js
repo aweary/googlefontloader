@@ -5,61 +5,52 @@ const microbe = require('microbe.js');
 const app = microbe();
 const auth = require('./auth.js');
 const fs = require('fs');
-const crypto = require('crypto');
-const metadata = require('./lib/metadata.js');
-
+const querystring = require('querystring');
+const mongoose = require('mongoose');
+const data = require('./lib/data.js');
 
 /* Get the Github client for google/fonts */
 var client = require('octonode').client(auth.token);
 var repo = client.repo('google/fonts');
 
-/* Cache the names too, for easy reference */
-var fontCache = JSON.parse(fs.readFileSync('fonts.json'));
-if (!fontCache.apache) fontCache.apache = {};
-if (!fontCache.count) fontCache.count = 0;
+/* Cache the fonts */
+var fontCache = {};
 
-/* Alias a local variable to the object property for easy access */
-var apache = fontCache.apache;
-var fonts = [];
+/* Request the fonts for the apache and OLF folders on the Github repo */
+getFonts('ofl', fontCache, data);
+setTimeout(function() { getFonts('apache', fontCache, data); }, 10000)
 
-/* Hit the apache fonts first */
-repo.contents('apache', function(err, contents) {
-
-  if (err) console.log(err);
-
-  contents.forEach((details) => {
-
-    /* If the font hasn't been cached or has changed,  re/add it */
-    if (!apache[details.name] || (apache[details.name].sha !== details.sha)) {
-      apache[details.name] = details;
-    }
-
-  });
-
-  /* Add the font objects to an iteratable list */
-  Object.keys(apache).forEach((key) => {
-    fonts.push(apache[key]);
-  });
-
-  /* Get the data for each font */
-  fonts.forEach((font) => metadata(repo, font));
+/**
+ * use the Github API wrapper to populate an in-memory cache of the
+ * fonts and their metadata.
+ * @param  {[type]} root  [description]
+ * @param  {[type]} cache [description]
+ * @return {[type]}       [description]
+ */
 
 
-  /* Close out the JSON file and update it's contents */
-  let fontNames = JSON.stringify(fontCache);
-  fs.writeFile('fonts.json', fontNames, function(err) {
+function getFonts(root, cache, callback) {
+
+  var finished = false;
+  repo.contents(root, function(err, contents) {
+
     if (err) console.log(err);
+    contents.forEach((details) => {
+
+      /* If the font hasn't been cached or has changed,  re/add it */
+      if (!cache[details.name] || (cache[details.name].sha !== cache.sha)) {
+        cache[details.name] = details;
+      }
+
+      finished = contents.indexOf(details) === contents.length - 1;
+      if (finished) callback(cache);
+
+    });
   });
+}
 
-});
+require('./lib/routes.js')(app, fontCache);
 
-
-
-app.route('/', function(req, res) {
-  res.render('index', {fonts: fonts});
-  console.log(fonts);
-});
-
-app.start(3000, function() {
-  console.log('Started on port 3000');
+app.start(8080, function() {
+  console.log('Started on port 8080');
 })

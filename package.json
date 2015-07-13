@@ -5,12 +5,18 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha spec",
-    "start" : "node --harmony index.js"
+    "start": "node --harmony index.js"
   },
   "author": "Brandon Dail <Kierkegaurd@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "async": "^1.2.1",
+    "htmlstrip-native": "^0.1.1",
     "microbe.js": "^0.1.5",
-    "octonode": "^0.6.18"
+    "mongoose": "^4.0.6",
+    "octonode": "^0.6.18",
+    "pg": "^4.4.0",
+    "request": "^2.58.0",
+    "request-promise": "^0.4.2"
   }
 }
