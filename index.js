@@ -1,24 +1,26 @@
-'use strict';
+import microbe from 'microbe.js'
+import fs from 'fs'
+import querystring from 'querystring'
+import mongoose from 'mongoose'
+import octonode from 'octonode'
 
-/* Setup Microbe.js web server */
-const microbe = require('microbe.js');
-const app = microbe();
-const auth = require('./auth.js');
-const fs = require('fs');
-const querystring = require('querystring');
-const mongoose = require('mongoose');
-const data = require('./lib/data.js');
+import auth from './auth.js'
+import data from './lib/data.js'
+import Font from './lib/models/font.js'
+import routes from './lib/routes.js'
 
-/* Get the Github client for google/fonts */
-var client = require('octonode').client(auth.token);
-var repo = client.repo('google/fonts');
+const app = microbe()
+const client = octonode.client(auth.token)
+const repo = client.repo('google/fonts')
 
-/* Cache the fonts */
-var fontCache = {};
+mongoose.connect('mongodb://localhost/fonts')
+const db = mongoose.connection
+
+const fontCache = {}
 
 /* Request the fonts for the apache and OLF folders on the Github repo */
-getFonts('ofl', fontCache, data);
-setTimeout(function() { getFonts('apache', fontCache, data); }, 10000)
+getFonts('ofl')
+getFonts('apache')
 
 /**
  * use the Github API wrapper to populate an in-memory cache of the
@@ -29,28 +31,28 @@ setTimeout(function() { getFonts('apache', fontCache, data); }, 10000)
  */
 
 
-function getFonts(root, cache, callback) {
+function getFonts(root) {
 
-  var finished = false;
   repo.contents(root, function(err, contents) {
 
-    if (err) console.log(err);
+    if (err) console.log(err)
+
     contents.forEach((details) => {
 
-      /* If the font hasn't been cached or has changed,  re/add it */
-      if (!cache[details.name] || (cache[details.name].sha !== cache.sha)) {
-        cache[details.name] = details;
-      }
+      let name = details.name
+      let path = details.path
+      let sha = details.sha
+      let url = details.url
 
-      finished = contents.indexOf(details) === contents.length - 1;
-      if (finished) callback(cache);
+      let fontData = { name, path, sha, url }
+      let font = new Font(data)
 
-    });
-  });
+    })
+  })
 }
 
-require('./lib/routes.js')(app, fontCache);
+routes(app, fontCache)
 
 app.start(8080, function() {
-  console.log('Started on port 8080');
+  console.log('Started on port 8080')
 })

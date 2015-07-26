@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha spec",
-    "start": "node --harmony index.js"
+    "start": "babel-node index.js"
   },
   "author": "Brandon Dail <Kierkegaurd@gmail.com>",
   "license": "ISC",
@@ -13,7 +13,7 @@
     "async": "^1.2.1",
     "htmlstrip-native": "^0.1.1",
     "microbe.js": "^0.1.5",
-    "mongoose": "^4.0.6",
+    "mongoose": "^4.0.7",
     "octonode": "^0.6.18",
     "pg": "^4.4.0",
     "request": "^2.58.0",
