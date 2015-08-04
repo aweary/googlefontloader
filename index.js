@@ -6,6 +6,9 @@ import octonode from 'octonode'
 
 import auth from './auth.js'
 import data from './lib/data.js'
+import metadata from './lib/metadata.js'
+import structure from './lib/structure.js'
+import description from './lib/description.js'
 import Font from './lib/models/font.js'
 import routes from './lib/routes.js'
 
@@ -20,7 +23,6 @@ const fontCache = {}
 
 /* Request the fonts for the apache and OLF folders on the Github repo */
 getFonts('ofl')
-getFonts('apache')
 
 /**
  * use the Github API wrapper to populate an in-memory cache of the
@@ -44,11 +46,23 @@ function getFonts(root) {
       let sha = details.sha
       let url = details.url
 
-      let fontData = { name, path, sha, url }
-      let font = new Font(data)
+      data({ name, path, sha, url })
+        .then(result => structure(result))
+          .catch(err => { throw err })
+        .then(result => metadata(result))
+          .catch(err => { throw err })
+        .then(result => description(result))
+          .catch(err => { throw err })
+        .then(result => {
+          let font = new Font(result)
+          font.save(function() {
+            console.log('Saved %j!', font.name)
+          })
+        })
 
     })
   })
+
 }
 
 routes(app, fontCache)
