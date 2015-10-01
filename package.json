@@ -5,13 +5,17 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha spec",
-    "start": "babel-node index.js"
+    "start": "babel-node index.js",
+    "debug": "DEBUG=cacheFonts,data babel-node index.js"
   },
   "author": "Brandon Dail <Kierkegaurd@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "async": "^1.2.1",
+    "debug": "^2.2.0",
     "htmlstrip-native": "^0.1.1",
+    "limiter": "^1.0.5",
+    "longjohn": "^0.2.7",
     "microbe.js": "^0.1.5",
     "mongoose": "^4.0.7",
     "octonode": "^0.6.18",
